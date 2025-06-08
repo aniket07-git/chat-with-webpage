@@ -1,35 +1,53 @@
 {
-  "hash": "4279704e",
+  "hash": "477f3ecc",
   "configHash": "81f875a7",
-  "lockfileHash": "96ea020f",
-  "browserHash": "521b6281",
+  "lockfileHash": "172720c4",
+  "browserHash": "aef7f372",
   "optimized": {
     "react/jsx-dev-runtime": {
       "src": "../../../../node_modules/react/jsx-dev-runtime.js",
       "file": "react_jsx-dev-runtime.js",
-      "fileHash": "d09c2cf0",
+      "fileHash": "b1e9531a",
       "needsInterop": true
     },
     "react": {
       "src": "../../../../node_modules/react/index.js",
       "file": "react.js",
-      "fileHash": "d7839f32",
+      "fileHash": "d18b5636",
       "needsInterop": true
     },
     "react-dom/client": {
       "src": "../../../../node_modules/react-dom/client.js",
       "file": "react-dom_client.js",
-      "fileHash": "8fcc8b86",
+      "fileHash": "9bc19963",
       "needsInterop": true
     },
     "@chakra-ui/react": {
       "src": "../../../../node_modules/@chakra-ui/react/dist/esm/index.mjs",
       "file": "@chakra-ui_react.js",
-      "fileHash": "05cb4192",
+      "fileHash": "4d484fe0",
+      "needsInterop": false
+    },
+    "@chakra-ui/icons": {
+      "src": "../../../../node_modules/@chakra-ui/icons/dist/esm/index.mjs",
+      "file": "@chakra-ui_icons.js",
+      "fileHash": "e3bfa6af",
+      "needsInterop": false
+    },
+    "@emotion/react": {
+      "src": "../../../../node_modules/@emotion/react/dist/emotion-react.browser.development.esm.js",
+      "file": "@emotion_react.js",
+      "fileHash": "387b0899",
       "needsInterop": false
     }
   },
   "chunks": {
+    "chunk-AUEEEEXO": {
+      "file": "chunk-AUEEEEXO.js"
+    },
+    "chunk-UHEYTXKA": {
+      "file": "chunk-UHEYTXKA.js"
+    },
     "chunk-T5J4HPFP": {
       "file": "chunk-T5J4HPFP.js"
     },

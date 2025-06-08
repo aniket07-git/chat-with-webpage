@@ -25,6 +25,8 @@ const Popup: React.FC = () => {
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [suggestedQuestions, setSuggestedQuestions] = useState<string[]>([]);
+  const [pageContent, setPageContent] = useState('');
+  const [tabUrl, setTabUrl] = useState('');
   const toast = useToast();
   const { colorMode, toggleColorMode } = useColorMode();
 
@@ -37,11 +39,37 @@ const Popup: React.FC = () => {
   const userText = useColorModeValue('blue.800', 'white');
   const assistantText = useColorModeValue('gray.800', 'gray.100');
 
+  // Helper to get active tab's content and URL
+  const fetchActiveTabContent = async () => {
+    return new Promise<{ content: string; url: string }>((resolve, reject) => {
+      if (!chrome.tabs) return reject('Not running in Chrome extension context');
+      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        const tab = tabs[0];
+        if (!tab || !tab.id) return reject('No active tab');
+        const url = tab.url || '';
+        chrome.tabs.sendMessage(
+          tab.id,
+          { type: 'GET_PAGE_CONTENT' },
+          (response) => {
+            if (chrome.runtime.lastError) {
+              reject(chrome.runtime.lastError.message);
+            } else {
+              resolve({ content: response?.content || '', url });
+            }
+          }
+        );
+      });
+    });
+  };
+
   useEffect(() => {
-    // Load chat history and suggested questions when popup opens
+    // On popup open, get the active tab's content and URL, then load chat/suggestions
     const loadInitialState = async () => {
       try {
-        const url = window.location.href;
+        const { content, url } = await fetchActiveTabContent();
+        setPageContent(content);
+        setTabUrl(url);
+        // Load chat history for this URL
         const history = loadChatHistory(url);
         if (history.length > 0) {
           setMessages(history);
@@ -53,13 +81,13 @@ const Popup: React.FC = () => {
             },
           ]);
         }
-        // Fetch suggested questions
-        const result = await getSuggestedQuestions(url);
+        // Fetch suggested questions using the page content
+        const result = await getSuggestedQuestions(content);
         setSuggestedQuestions(result.suggestions || []);
       } catch (error) {
         toast({
           title: 'Error',
-          description: 'Failed to load chat history',
+          description: 'Failed to load page content',
           status: 'error',
           duration: 3000,
           isClosable: true,
@@ -71,18 +99,18 @@ const Popup: React.FC = () => {
 
   const handleMessageSubmit = async () => {
     if (!inputMessage.trim() || isLoading) return;
-    const url = window.location.href;
     const newMessage: Message = {
       role: 'user',
       content: inputMessage,
     };
     const updatedUser: Message[] = [...messages, newMessage];
-    saveChatHistory(url, updatedUser);
+    saveChatHistory(tabUrl, updatedUser);
     setMessages(updatedUser);
     setInputMessage('');
     try {
       setIsLoading(true);
-      const response = await getChatAnswer(url, inputMessage);
+      // Use the loaded page content as context
+      const response = await getChatAnswer(pageContent, inputMessage);
       const updatedAssistant: Message[] = [
         ...updatedUser,
         {
@@ -92,7 +120,7 @@ const Popup: React.FC = () => {
             : 'Sorry, that question is outside the scope of this page.',
         },
       ];
-      saveChatHistory(url, updatedAssistant);
+      saveChatHistory(tabUrl, updatedAssistant);
       setMessages(updatedAssistant);
     } catch (error) {
       toast({
@@ -108,8 +136,7 @@ const Popup: React.FC = () => {
   };
 
   const handleClearHistory = () => {
-    const url = window.location.href;
-    clearChatHistory(url);
+    clearChatHistory(tabUrl);
     setMessages([
       {
         role: 'assistant',
@@ -137,20 +164,36 @@ const Popup: React.FC = () => {
         {suggestedQuestions.length > 0 && (
           <Box px={4} py={2} bg={chatBg} borderBottomWidth={1} borderColor={border}>
             <Text fontWeight="bold" mb={2}>Suggested Questions:</Text>
-            <VStack spacing={2} align="stretch">
-              {suggestedQuestions.map((q, idx) => (
+            <VStack spacing={1} align="stretch">
+              {suggestedQuestions.slice(0, 3).map((q, idx) => (
                 <Button
                   key={idx}
-                  variant="outline"
+                  variant="ghost"
                   size="sm"
                   onClick={() => setInputMessage(q)}
                   colorScheme="blue"
                   width="100%"
+                  px={3}
+                  py={1.5}
                   sx={{
                     whiteSpace: 'normal',
                     wordBreak: 'break-word',
-                    textAlign: 'left',
                     overflowWrap: 'break-word',
+                    textAlign: 'left',
+                    lineHeight: 1.4,
+                    fontWeight: 500,
+                    fontSize: '14px',
+                    color: useColorModeValue('blue.700', 'blue.200'),
+                    background: 'none',
+                    border: 'none',
+                    borderRadius: 0,
+                    boxShadow: 'none',
+                    margin: '2px 0',
+                    transition: 'all 0.2s',
+                    _hover: {
+                      textDecoration: 'underline',
+                      color: useColorModeValue('blue.800', 'white'),
+                    },
                   }}
                 >
                   {q}
