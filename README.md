@@ -16,6 +16,7 @@ This is a monorepo project using Turborepo, containing:
 - ✅ Chat interface with message display
 - ✅ Loading states and error handling
 - ✅ Chat history is saved per URL using localStorage, so users can return to previous conversations for each page. A "Clear History" button is available for each URL.
+- ✅ Suggested Questions: When you load a URL, the app fetches and displays suggested questions based on the page content. Clicking a suggestion fills it into the chat input for easy sending.
 - ⏳ Backend API integration (TODO)
 - ⏳ OpenAI integration (TODO)
 - ⏳ Webpage content extraction (TODO)
@@ -63,6 +64,7 @@ The web app will be available at `http://localhost:5173`
 - Chat history is automatically saved per URL using localStorage.
 - When you return to a URL, your previous conversation is restored.
 - You can clear the chat history for a URL using the "Clear History" button.
+- **Suggested Questions:** When you load a URL, the app fetches and displays suggested questions based on the page content. Click a suggestion to fill it into the chat input.
 
 ### Chrome Extension
 
