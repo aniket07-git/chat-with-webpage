@@ -18,7 +18,7 @@ import { MoonIcon, SunIcon } from '@chakra-ui/icons';
 import { getChatAnswer } from './api';
 import { saveChatHistory, loadChatHistory, clearChatHistory, getSuggestedQuestions } from './chatHistory';
 
-// Define animations
+// Animation keyframes for background effects
 const gradientShift = keyframes`
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
@@ -44,14 +44,14 @@ interface Message {
 }
 
 function App() {
-  // State management for URL input, messages, and loading states
-  const [url, setUrl] = useState('');
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [inputMessage, setInputMessage] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [suggestedQuestions, setSuggestedQuestions] = useState<string[]>([]);
-  const toast = useToast();
-  const { colorMode, toggleColorMode } = useColorMode();
+  // State management for URL input, chat messages, input field, loading, and suggestions
+  const [url, setUrl] = useState(''); // Stores the current URL
+  const [messages, setMessages] = useState<Message[]>([]); // Chat history for the current URL
+  const [inputMessage, setInputMessage] = useState(''); // User's current input
+  const [isLoading, setIsLoading] = useState(false); // Loading state for API calls
+  const [suggestedQuestions, setSuggestedQuestions] = useState<string[]>([]); // Suggested questions for the page
+  const toast = useToast(); // Toast notifications
+  const { colorMode, toggleColorMode } = useColorMode(); // Theme mode and toggle
 
   // Color tokens for light/dark mode
   const bg = useColorModeValue('gray.50', 'gray.800');
@@ -64,22 +64,21 @@ function App() {
   const gradientStart = useColorModeValue('blue.50', 'blue.900');
   const gradientEnd = useColorModeValue('purple.50', 'purple.900');
 
-  // Animation styles
+  // Animation styles for background elements
   const gradientAnimation = {
     background: `linear-gradient(-45deg, ${gradientStart}, ${gradientEnd}, ${gradientStart})`,
     backgroundSize: '400% 400%',
     animation: `${gradientShift} 15s ease infinite`,
   };
-
   const floatingAnimation = {
     animation: `${float} 6s ease-in-out infinite`,
   };
-
   const pulseAnimation = {
     animation: `${pulse} 3s ease-in-out infinite`,
   };
 
   // Handle URL submission and initial webpage loading
+  // Loads chat history and suggested questions for the entered URL
   const handleUrlSubmit = async () => {
     if (!url) {
       toast({
@@ -91,10 +90,9 @@ function App() {
       });
       return;
     }
-
     try {
       setIsLoading(true);
-      // Load chat history for this URL
+      // Load chat history for this URL from localStorage
       const history = loadChatHistory(url);
       if (history.length > 0) {
         setMessages(history);
@@ -106,7 +104,7 @@ function App() {
           } as Message,
         ]);
       }
-      // Fetch suggested questions
+      // Fetch suggested questions from backend
       const context = url; // Replace with actual page content if available
       const result = await getSuggestedQuestions(context);
       setSuggestedQuestions(result.suggestions || []);
@@ -124,20 +122,18 @@ function App() {
   };
 
   // Handle chat message submission and response
+  // Sends user message to backend and updates chat history
   const handleMessageSubmit = async () => {
     if (!inputMessage.trim()) return;
-
     // Add user message to chat
     const newMessage: Message = {
       role: 'user',
       content: inputMessage,
     };
-
     const updatedUser: Message[] = [...messages, newMessage];
     saveChatHistory(url, updatedUser);
     setMessages(updatedUser);
     setInputMessage('');
-
     try {
       setIsLoading(true);
       // Use the loaded page content as context. For now, you can use the URL or a placeholder.
@@ -167,7 +163,7 @@ function App() {
     }
   };
 
-  // Clear chat history for the current URL
+  // Clear chat history for the current URL and reset chat to initial state
   const handleClearHistory = () => {
     clearChatHistory(url);
     setMessages([
@@ -178,15 +174,24 @@ function App() {
     ]);
   };
 
+  // Reset the URL input, chat messages, and suggestions to allow entering a new URL
+  const handleNewUrl = () => {
+    setUrl('');
+    setMessages([]);
+    setInputMessage('');
+    setSuggestedQuestions([]);
+  };
+
   return (
     <ChakraProvider>
+      {/* Main background with animated gradients and doodles */}
       <Box 
         minH="100vh" 
         position="relative"
         overflow="hidden"
         sx={gradientAnimation}
       >
-        {/* Animated background elements */}
+        {/* Animated background elements (circles, doodles, people) */}
         <Box
           position="absolute"
           top="10%"
@@ -258,7 +263,7 @@ function App() {
 
         <Container maxW="container.md" py={8} position="relative" zIndex="1">
           <VStack spacing={6} align="stretch">
-            {/* Header with theme toggle */}
+            {/* Header with app title and theme toggle */}
             <HStack 
               justify="space-between" 
               px={4} 
@@ -298,7 +303,7 @@ function App() {
               />
             </HStack>
 
-            {/* URL Input Section */}
+            {/* URL Input Section with Load, Clear History, and New URL buttons */}
             <Box 
               bg={chatBg} 
               p={4} 
@@ -313,7 +318,7 @@ function App() {
                 },
               }}
             >
-              <HStack spacing={2}>
+              <HStack spacing={2} wrap="nowrap" align="center">
                 <Input
                   placeholder="Enter webpage URL"
                   value={url}
@@ -356,6 +361,9 @@ function App() {
                     colorScheme="red" 
                     variant="outline" 
                     onClick={handleClearHistory}
+                    minWidth="110px"
+                    flexShrink={0}
+                    isTruncated
                     sx={{
                       transition: 'all 0.3s ease',
                       bg: useColorModeValue('whiteAlpha.900', 'gray.700'),
@@ -375,6 +383,35 @@ function App() {
                     }}
                   >
                     Clear History
+                  </Button>
+                )}
+                {messages.length > 0 && (
+                  <Button
+                    colorScheme="gray"
+                    variant="outline"
+                    onClick={handleNewUrl}
+                    minWidth="90px"
+                    flexShrink={0}
+                    isTruncated
+                    sx={{
+                      transition: 'all 0.3s ease',
+                      bg: useColorModeValue('whiteAlpha.900', 'gray.700'),
+                      color: useColorModeValue('gray.700', 'gray.200'),
+                      border: '1px solid',
+                      borderColor: useColorModeValue('gray.300', 'gray.600'),
+                      boxShadow: 'sm',
+                      _hover: {
+                        transform: 'translateY(-2px)',
+                        bg: useColorModeValue('gray.100', 'gray.600'),
+                        color: useColorModeValue('gray.800', 'gray.100'),
+                        boxShadow: 'md',
+                      },
+                      _active: {
+                        bg: useColorModeValue('gray.200', 'gray.900'),
+                      },
+                    }}
+                  >
+                    New URL
                   </Button>
                 )}
               </HStack>
@@ -397,7 +434,7 @@ function App() {
                 }}
               >
                 <Text fontWeight="bold" mb={2}>Suggested Questions:</Text>
-                <HStack spacing={2} flexWrap="wrap">
+                <VStack spacing={2} align="stretch">
                   {suggestedQuestions.map((q, idx) => (
                     <Button
                       key={idx}
@@ -405,28 +442,23 @@ function App() {
                       size="sm"
                       onClick={() => setInputMessage(q)}
                       colorScheme="blue"
+                      width="100%"
                       sx={{
+                        whiteSpace: 'normal',
+                        wordBreak: 'break-word',
+                        overflowWrap: 'break-word',
+                        textAlign: 'left',
+                        color: useColorModeValue('blue.600', 'gray.100'),
                         transition: 'all 0.3s ease',
-                        bg: useColorModeValue('whiteAlpha.900', 'gray.700'),
-                        color: useColorModeValue('blue.700', 'blue.200'),
-                        border: '1px solid',
-                        borderColor: useColorModeValue('blue.200', 'blue.600'),
-                        boxShadow: 'sm',
                         _hover: {
                           transform: 'translateY(-2px)',
-                          bg: useColorModeValue('blue.50', 'blue.800'),
-                          color: useColorModeValue('blue.800', 'blue.100'),
-                          boxShadow: 'md',
-                        },
-                        _active: {
-                          bg: useColorModeValue('blue.100', 'blue.900'),
                         },
                       }}
                     >
                       {q}
                     </Button>
                   ))}
-                </HStack>
+                </VStack>
               </Box>
             )}
 
