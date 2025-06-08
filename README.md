@@ -46,8 +46,8 @@ The backend is built with FastAPI and provides a powerful, interactive API docum
 
 ### Screenshot
 
-![FastAPI Docs](![screencapture-127-0-0-1-8000-docs-2025-06-07-23_43_29 (1)](https://github.com/user-attachments/assets/40e62531-ed79-45d0-85c7-518d85094958)
-)
+[screencapture-127-0-0-1-8000-docs-2025-06-07-23_43_29 (1)](https://github.com/user-attachments/assets/40e62531-ed79-45d0-85c7-518d85094958)
+
 
 ### What You See in the Screenshot
 - The FastAPI docs provide an interactive interface to test and explore the backend endpoints.
