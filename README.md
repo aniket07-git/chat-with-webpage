@@ -97,6 +97,16 @@ The backend is built with FastAPI and provides a powerful, interactive API docum
    - Enable "Developer mode" (top right).
    - Click "Load unpacked" and select the `dist/` folder inside `packages/extension`.
 
+## Screenshot
+
+Light Theme Extension:
+
+<img width="1321" alt="Screenshot 2025-06-08 at 12 56 45 AM" src="https://github.com/user-attachments/assets/fd84aed5-f485-4865-bbb0-13f212c3f1b5" />
+
+Dark Theme Extension:
+
+<img width="1239" alt="Screenshot 2025-06-08 at 12 57 05 AM" src="https://github.com/user-attachments/assets/1442aeb6-3962-44d0-bd98-28cdfe5d7367" />
+
 ---
 
 ### Notes
