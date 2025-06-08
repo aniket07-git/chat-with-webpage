@@ -8,29 +8,104 @@ This is a monorepo project using Turborepo, containing:
 - `packages/web-app`: The main web application
 - `packages/extension`: Chrome extension
 
-## Current Progress
+## How to Run the Project
 
-### Web App (In Progress)
-- ✅ Basic UI implementation with React and Chakra UI
-- ✅ URL input and submission
-- ✅ Chat interface with message display
-- ✅ Loading states and error handling
-- ✅ Chat history is saved per URL using localStorage, so users can return to previous conversations for each page. A "Clear History" button is available for each URL.
-- ✅ Suggested Questions: When you load a URL, the app fetches and displays suggested questions based on the page content. Clicking a suggestion fills it into the chat input for easy sending.
-- ⏳ Backend API integration (TODO)
-- ⏳ OpenAI integration (TODO)
-- ⏳ Webpage content extraction (TODO)
-- ⏳ Real-time streaming responses (TODO)
+This project consists of three main parts:
+- **Backend (FastAPI, Python)**
+- **Web App (React, TypeScript)**
+- **Chrome Extension (React, TypeScript)**
 
-### Chrome Extension (In Progress)
-- ✅ Extension setup and build scripts
-- ✅ Manifest v3 configuration
-- ✅ Popup UI loads with correct size (placeholder)
-- ✅ Placeholder icons for all required sizes (16, 32, 48, 128)
-- ✅ Icons and manifest are always copied to `dist/` on build
-- ✅ Popup size fix (min-width/min-height)
-- ⏳ Chat UI and logic integration (TODO)
-- ⏳ Content script and webpage interaction (TODO)
+Below are detailed instructions for running each part.
+
+---
+
+### 1. Backend (FastAPI)
+
+1. **Navigate to the backend directory:**
+   ```bash
+   cd packages/backend
+   ```
+2. **Install dependencies:**
+   ```bash
+   pip install -r requirements.txt
+   ```
+3. **Set up your `.env` file:**
+   - Copy `.env.example` to `.env` and add your OpenAI API key.
+4. **Start the backend server:**
+   ```bash
+   uvicorn main:app --reload
+   ```
+   - The backend will run at `http://127.0.0.1:8000`
+
+### Backend API Documentation
+
+The backend is built with FastAPI and provides a powerful, interactive API documentation interface.
+
+### API Docs URL
+- [http://127.0.0.1:8000/docs#/](http://127.0.0.1:8000/docs#/)
+
+### Screenshot
+
+![FastAPI Docs](screenshots/fastapi-docs.png)
+
+### What You See in the Screenshot
+- The FastAPI docs provide an interactive interface to test and explore the backend endpoints.
+- **POST /chat**: Endpoint for sending chat questions and receiving answers based on webpage content.
+- **POST /suggested-questions**: Endpoint for getting suggested questions for a given page context.
+- **GET /**: Root endpoint for health check or welcome message.
+- The lower section shows the request/response schemas for each endpoint, making it easy to understand the required input and output formats.
+- You can use the "Try it out" button to interactively test the API directly from your browser.
+
+---
+
+### 2. Web App (React)
+
+1. **Navigate to the web app directory:**
+   ```bash
+   cd packages/web-app
+   ```
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+3. **Start the development server:**
+   ```bash
+   npm run dev
+   ```
+   - The web app will run at `http://localhost:5173`
+
+---
+
+### 3. Chrome Extension
+
+1. **Navigate to the extension directory:**
+   ```bash
+   cd packages/extension
+   ```
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+3. **Build the extension:**
+   ```bash
+   npm run build
+   ```
+   - The build output will be in the `dist/` folder.
+4. **Load the extension in Chrome:**
+   - Open `chrome://extensions/` in your browser.
+   - Enable "Developer mode" (top right).
+   - Click "Load unpacked" and select the `dist/` folder inside `packages/extension`.
+
+---
+
+### Notes
+- Make sure the backend is running before using the web app or extension.
+- The web app and extension both communicate with the backend at `http://127.0.0.1:8000` by default.
+- If you change ports or run on a remote server, update the API URLs in the frontend/extension code accordingly.
+
+---
+
+For more details, see the documentation in each package folder.
 
 ## Getting Started
 
@@ -116,4 +191,44 @@ export function loadChatHistory(url: string): any[] {
 
 export function clearChatHistory(url: string) {
   localStorage.removeItem(`chat-history:${url}`);
-} 
+}
+
+## WebApp
+
+The web app provides a modern, user-friendly interface for chatting with any webpage. It supports both light and dark themes, and is designed for a seamless, interactive experience.
+
+### Screenshots
+
+#### Light Theme
+![WebApp Light Theme](screenshots/webapp-light.png)
+
+#### Dark Theme
+![WebApp Dark Theme](screenshots/webapp-dark.png)
+
+### Features
+
+- **Light & Dark Theme Support:**
+  - Instantly toggle between light and dark modes for comfortable viewing in any environment.
+
+- **URL Input:**
+  - Provide an input field for users to submit any webpage URL.
+  - Easily load and analyze the content of the submitted page.
+
+- **Chat with Webpage Content:**
+  - Ask questions and chat with the content of the loaded webpage.
+  - The assistant provides contextual answers based on the page content.
+
+- **Real-Time Streaming Responses:**
+  - Chat responses stream in real time for a smooth, conversational experience.
+
+- **Suggested Questions:**
+  - Get smart, context-aware suggested questions for each page.
+  - Click a suggestion to quickly fill the chat input.
+
+- **Per-URL Chat History:**
+  - Save chat history for each page or URL.
+  - When you return to a URL, your previous conversation is restored automatically.
+
+- **Manage User History:**
+  - Clear chat history for any URL with a single click.
+  - Start a new conversation or load a new URL at any time. 
