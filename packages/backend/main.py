@@ -42,7 +42,31 @@ class SuggestionsResponse(BaseModel):
 @app.post("/chat", response_model=ChatResponse)
 async def chat(req: ChatRequest):
     # Compose prompt for OpenAI
-    prompt = f"Page Content:\n{req.context}\n\nUser Question: {req.question}\n\nIf the answer is in the page content, answer it. If not, reply: 'Sorry, that question is outside the scope of this page.'"
+    prompt = f"""
+        You are an assistant helping users understand the content of a webpage.
+
+        You have access to the following extracted information from the webpage:
+
+        - Main text content
+        - Page headings (H1, H2, H3)
+        - Meta description
+        - Important links and anchor text
+        - Any detected structured data (if available)
+
+        Here is the Page Content:
+        {req.context}
+
+        User Question:
+        {req.question}
+
+        Instructions:
+        - Use only the provided Page Content to answer.
+        - If helpful, you may reference headings, meta descriptions, and structured data as part of your answer.
+        - Do NOT make up information that is not present in the Page Content.
+        - If the answer cannot be found in the provided Page Content, reply exactly: "Sorry, that question is outside the scope of this page."
+        - Provide clear, accurate, and concise answers.
+        - If relevant, you may suggest related sections of the page the user could explore.
+        """
     try:
         completion = openai.chat.completions.create(
             model="gpt-3.5-turbo",
@@ -57,7 +81,30 @@ async def chat(req: ChatRequest):
 
 @app.post("/suggested-questions", response_model=SuggestionsResponse)
 async def suggested_questions(req: SuggestionsRequest):
-    prompt = f"Page Content:\n{req.context}\n\nSuggest 5 relevant questions a user might ask about this page. Return only the questions as a list."
+    prompt = f"""
+        You are an assistant helping generate relevant questions based on the content of a webpage.
+
+        You have access to the following extracted information from the webpage:
+
+        - Main text content
+        - Page headings (H1, H2, H3)
+        - Meta description
+        - Important links and anchor text
+        - Any detected structured data (if available)
+
+        Here is the Page Content:
+        {req.context}
+
+        Task:
+        - Suggest 5 relevant and helpful questions a user might naturally ask about this page.
+        - The questions should reflect the key topics, facts, or sections present in the Page Content.
+        - If the Page Content lacks sufficient information, generate 5 reasonable questions based on the page's likely purpose (based on headings, meta description, or general web page patterns).
+        - Do not reply that you cannot generate questions — always return 5 questions, even if they must be generic.
+
+        Formatting:
+        - Return ONLY the list of questions, numbered 1 through 5.
+        - Do not include any explanation or commentary — just the questions.
+        """
     try:
         completion = openai.chat.completions.create(
             model="gpt-3.5-turbo",

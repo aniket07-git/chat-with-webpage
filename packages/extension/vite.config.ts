@@ -13,7 +13,7 @@ export default defineConfig({
     outDir: 'dist',
     rollupOptions: {
       input: {
-        popup: path.resolve(__dirname, 'src/index.html'),
+        popup: path.resolve(__dirname, 'src/index.tsx'),
         content: path.resolve(__dirname, 'src/content.ts'),
       },
       output: {
