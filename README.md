@@ -15,6 +15,7 @@ This is a monorepo project using Turborepo, containing:
 - ✅ URL input and submission
 - ✅ Chat interface with message display
 - ✅ Loading states and error handling
+- ✅ Chat history is saved per URL using localStorage, so users can return to previous conversations for each page. A "Clear History" button is available for each URL.
 - ⏳ Backend API integration (TODO)
 - ⏳ OpenAI integration (TODO)
 - ⏳ Webpage content extraction (TODO)
@@ -58,6 +59,11 @@ npm run dev
 ```
 The web app will be available at `http://localhost:5173`
 
+**Web App Features:**
+- Chat history is automatically saved per URL using localStorage.
+- When you return to a URL, your previous conversation is restored.
+- You can clear the chat history for a URL using the "Clear History" button.
+
 ### Chrome Extension
 
 3. Build the extension:
@@ -96,3 +102,16 @@ npm run build
 ## License
 
 MIT 
+
+export function saveChatHistory(url: string, messages: any[]) {
+  localStorage.setItem(`chat-history:${url}`, JSON.stringify(messages));
+}
+
+export function loadChatHistory(url: string): any[] {
+  const data = localStorage.getItem(`chat-history:${url}`);
+  return data ? JSON.parse(data) : [];
+}
+
+export function clearChatHistory(url: string) {
+  localStorage.removeItem(`chat-history:${url}`);
+} 
