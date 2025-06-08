@@ -25,13 +25,9 @@ Below are detailed instructions for running each part.
    ```bash
    cd packages/backend
    ```
-2. **Install dependencies:**
-   ```bash
-   pip install -r requirements.txt
-   ```
-3. **Set up your `.env` file:**
+2. **Set up your `.env` file:**
    - Copy `.env.example` to `.env` and add your OpenAI API key.
-4. **Start the backend server:**
+3. **Start the backend server:**
    ```bash
    uvicorn main:app --reload
    ```
