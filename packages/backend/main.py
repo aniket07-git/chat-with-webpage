@@ -4,14 +4,26 @@ from pydantic import BaseModel
 from typing import List
 import openai
 from dotenv import load_dotenv
+from fastapi.middleware.cors import CORSMiddleware
 
 # Load environment variables from .env file
 load_dotenv()
+
+# Debug print to check if the API key is loaded
+print("DEBUG: OPENAI_API_KEY =", os.getenv("OPENAI_API_KEY"))
 
 app = FastAPI()
 
 # Set your OpenAI API key from environment variable
 openai.api_key = os.getenv("OPENAI_API_KEY")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Or specify your frontend's URL
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 class ChatRequest(BaseModel):
     question: str

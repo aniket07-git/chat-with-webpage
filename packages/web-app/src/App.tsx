@@ -9,6 +9,7 @@ import {
   Container,
   useToast,
 } from '@chakra-ui/react';
+import { getChatAnswer } from './api';
 
 // Define the structure for chat messages
 interface Message {
@@ -73,13 +74,18 @@ function App() {
 
     try {
       setIsLoading(true);
-      // TODO: Implement chat message processing
-      // Currently using a placeholder response
-      const response: Message = {
-        role: 'assistant',
-        content: 'This is a placeholder response. Chat functionality will be implemented soon.',
-      };
-      setMessages(prev => [...prev, response]);
+      // Use the loaded page content as context. For now, you can use the URL or a placeholder.
+      const context = url;
+      const response = await getChatAnswer(context, inputMessage);
+      setMessages(prev => [
+        ...prev,
+        {
+          role: 'assistant',
+          content: response.in_scope
+            ? response.answer
+            : "Sorry, that question is outside the scope of this page.",
+        },
+      ]);
     } catch (error) {
       toast({
         title: 'Error',
