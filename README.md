@@ -46,7 +46,7 @@ The backend is built with FastAPI and provides a powerful, interactive API docum
 
 ### Screenshot
 
-[screencapture-127-0-0-1-8000-docs-2025-06-07-23_43_29 (1)](https://github.com/user-attachments/assets/40e62531-ed79-45d0-85c7-518d85094958)
+![screencapture-127-0-0-1-8000-docs-2025-06-07-23_43_29 (1)](https://github.com/user-attachments/assets/bf69f476-fee1-4885-9bfb-16b9f0087570)
 
 
 ### What You See in the Screenshot
@@ -201,10 +201,15 @@ The web app provides a modern, user-friendly interface for chatting with any web
 ### Screenshots
 
 #### Light Theme
-![WebApp Light Theme](screenshots/webapp-light.png)
+
+![screencapture-localhost-5173-2025-06-07-23_35_45](https://github.com/user-attachments/assets/ba7fa874-1f55-4a88-9c00-42a820f02ed3)
+
+![screencapture-localhost-5173-2025-06-07-23_38_56](https://github.com/user-attachments/assets/c2b1a123-4941-4a86-ad68-c2fac0a0b4b9)
+
 
 #### Dark Theme
-![WebApp Dark Theme](screenshots/webapp-dark.png)
+
+![screencapture-localhost-5173-2025-06-07-23_39_40 (1)](https://github.com/user-attachments/assets/a689f933-0213-4fec-afa6-f1f2cc2ddfdc)
 
 ### Features
 
