@@ -10,7 +10,7 @@ import {
   useToast,
 } from '@chakra-ui/react';
 import { getChatAnswer } from './api';
-import { saveChatHistory, loadChatHistory, clearChatHistory } from './chatHistory';
+import { saveChatHistory, loadChatHistory, clearChatHistory, getSuggestedQuestions } from './chatHistory';
 
 // Define the structure for chat messages
 interface Message {
@@ -24,6 +24,7 @@ function App() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [suggestedQuestions, setSuggestedQuestions] = useState<string[]>([]);
   const toast = useToast();
 
   // Handle URL submission and initial webpage loading
@@ -53,6 +54,10 @@ function App() {
           } as Message,
         ]);
       }
+      // Fetch suggested questions
+      const context = url; // Replace with actual page content if available
+      const result = await getSuggestedQuestions(context);
+      setSuggestedQuestions(result.suggestions || []);
     } catch (error) {
       toast({
         title: 'Error',
@@ -152,6 +157,25 @@ function App() {
               )}
             </Box>
           </Box>
+
+          {/* Suggested Questions Display */}
+          {suggestedQuestions.length > 0 && (
+            <Box mt={4}>
+              <Text fontWeight="bold" mb={2}>Suggested Questions:</Text>
+              <VStack align="start">
+                {suggestedQuestions.map((q, idx) => (
+                  <Button
+                    key={idx}
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setInputMessage(q)}
+                  >
+                    {q}
+                  </Button>
+                ))}
+              </VStack>
+            </Box>
+          )}
 
           {/* Chat Messages Display */}
           {messages.length > 0 && (
