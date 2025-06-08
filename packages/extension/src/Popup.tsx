@@ -6,7 +6,12 @@ import {
   Button,
   Text,
   useToast,
+  useColorMode,
+  useColorModeValue,
+  HStack,
+  IconButton,
 } from '@chakra-ui/react';
+import { MoonIcon, SunIcon } from '@chakra-ui/icons';
 import { getChatAnswer, getSuggestedQuestions } from './api';
 import { saveChatHistory, loadChatHistory, clearChatHistory } from './chatHistory';
 
@@ -21,6 +26,16 @@ const Popup: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [suggestedQuestions, setSuggestedQuestions] = useState<string[]>([]);
   const toast = useToast();
+  const { colorMode, toggleColorMode } = useColorMode();
+
+  // Color tokens for light/dark mode
+  const bg = useColorModeValue('gray.50', 'gray.800');
+  const chatBg = useColorModeValue('white', 'gray.700');
+  const border = useColorModeValue('gray.200', 'gray.600');
+  const userBubble = useColorModeValue('blue.100', 'blue.400');
+  const assistantBubble = useColorModeValue('gray.200', 'gray.600');
+  const userText = useColorModeValue('blue.800', 'white');
+  const assistantText = useColorModeValue('gray.800', 'gray.100');
 
   useEffect(() => {
     // Load chat history and suggested questions when popup opens
@@ -51,24 +66,20 @@ const Popup: React.FC = () => {
         });
       }
     };
-
     loadInitialState();
   }, []);
 
   const handleMessageSubmit = async () => {
     if (!inputMessage.trim() || isLoading) return;
-
     const url = window.location.href;
     const newMessage: Message = {
       role: 'user',
       content: inputMessage,
     };
-
     const updatedUser: Message[] = [...messages, newMessage];
     saveChatHistory(url, updatedUser);
     setMessages(updatedUser);
     setInputMessage('');
-
     try {
       setIsLoading(true);
       const response = await getChatAnswer(url, inputMessage);
@@ -108,21 +119,39 @@ const Popup: React.FC = () => {
   };
 
   return (
-    <Box w="400px" h="600px" p={4}>
-      <VStack h="full" spacing={4}>
-        <Text fontSize="xl" fontWeight="bold">Chat with Webpage</Text>
-        
+    <Box w="400px" h="600px" p={0} bg={bg} borderRadius="lg" boxShadow="lg" overflow="hidden">
+      <VStack h="full" spacing={0} align="stretch">
+        {/* Header with theme toggle */}
+        <HStack justify="space-between" px={4} py={3} bg={chatBg} borderBottomWidth={1} borderColor={border}>
+          <Text fontSize="xl" fontWeight="bold">Chat with Webpage</Text>
+          <IconButton
+            aria-label="Toggle dark mode"
+            icon={colorMode === 'light' ? <MoonIcon /> : <SunIcon />}
+            onClick={toggleColorMode}
+            variant="ghost"
+            size="sm"
+          />
+        </HStack>
+
         {/* Suggested Questions */}
         {suggestedQuestions.length > 0 && (
-          <Box w="full">
+          <Box px={4} py={2} bg={chatBg} borderBottomWidth={1} borderColor={border}>
             <Text fontWeight="bold" mb={2}>Suggested Questions:</Text>
-            <VStack align="start">
+            <VStack spacing={2} align="stretch">
               {suggestedQuestions.map((q, idx) => (
                 <Button
                   key={idx}
                   variant="outline"
                   size="sm"
                   onClick={() => setInputMessage(q)}
+                  colorScheme="blue"
+                  width="100%"
+                  sx={{
+                    whiteSpace: 'normal',
+                    wordBreak: 'break-word',
+                    textAlign: 'left',
+                    overflowWrap: 'break-word',
+                  }}
                 >
                   {q}
                 </Button>
@@ -132,56 +161,66 @@ const Popup: React.FC = () => {
         )}
 
         {/* Chat Messages */}
-        <Box 
-          flex={1} 
-          w="full" 
-          overflowY="auto" 
-          borderWidth={1} 
-          borderRadius="md" 
-          p={4}
+        <Box
+          flex={1}
+          w="full"
+          overflowY="auto"
+          bg={chatBg}
+          px={4}
+          py={2}
+          borderBottomWidth={1}
+          borderColor={border}
         >
           {messages.map((message, index) => (
             <Box
               key={index}
-              mb={4}
-              p={3}
-              borderRadius="md"
-              bg={message.role === 'user' ? 'blue.50' : 'gray.50'}
+              mb={3}
+              alignSelf={message.role === 'user' ? 'flex-end' : 'flex-start'}
+              maxW="80%"
+              bg={message.role === 'user' ? userBubble : assistantBubble}
+              color={message.role === 'user' ? userText : assistantText}
+              px={4}
+              py={2}
+              borderRadius={message.role === 'user' ? 'xl' : 'lg'}
+              boxShadow="sm"
             >
-              <Text fontWeight="bold" mb={1}>
+              <Text fontWeight="bold" fontSize="sm" mb={1}>
                 {message.role === 'user' ? 'You' : 'Assistant'}
               </Text>
-              <Text>{message.content}</Text>
+              <Text fontSize="md" whiteSpace="pre-wrap">{message.content}</Text>
             </Box>
           ))}
         </Box>
 
         {/* Chat Input */}
-        <Box w="full" display="flex" gap={2}>
-          <Input
-            value={inputMessage}
-            onChange={(e) => setInputMessage(e.target.value)}
-            placeholder="Type your message..."
-            onKeyPress={(e) => e.key === 'Enter' && handleMessageSubmit()}
-            disabled={isLoading}
-          />
-          <Button 
-            colorScheme="blue" 
-            onClick={handleMessageSubmit}
-            isLoading={isLoading}
-            disabled={!inputMessage.trim()}
-          >
-            Send
-          </Button>
-          {messages.length > 0 && (
-            <Button 
-              colorScheme="red" 
-              variant="outline" 
-              onClick={handleClearHistory}
+        <Box w="full" px={4} py={3} bg={chatBg}>
+          <HStack spacing={2}>
+            <Input
+              value={inputMessage}
+              onChange={(e) => setInputMessage(e.target.value)}
+              placeholder="Type your message..."
+              onKeyPress={(e) => e.key === 'Enter' && handleMessageSubmit()}
+              disabled={isLoading}
+              bg={useColorModeValue('white', 'gray.800')}
+            />
+            <Button
+              colorScheme="blue"
+              onClick={handleMessageSubmit}
+              isLoading={isLoading}
+              disabled={!inputMessage.trim()}
             >
-              Clear
+              Send
             </Button>
-          )}
+            {messages.length > 0 && (
+              <Button
+                colorScheme="red"
+                variant="outline"
+                onClick={handleClearHistory}
+              >
+                Clear
+              </Button>
+            )}
+          </HStack>
         </Box>
       </VStack>
     </Box>

@@ -12,7 +12,10 @@
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
   "devDependencies": {
-    "turbo": "^1.12.4",
-    "prettier": "^3.2.5"
+    "prettier": "^3.2.5",
+    "turbo": "^1.12.4"
+  },
+  "dependencies": {
+    "@chakra-ui/icons": "^2.2.4"
   }
-} 
+}
